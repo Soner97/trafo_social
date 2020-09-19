@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:travel_blog/ui/profile_edit_page/service/IHttpProfileService.dart';
+import 'package:travel_blog/ui/auth/service/IRegisterService.dart';
 import 'package:travel_blog/ui/profile_page/model/user_model.dart';
 
-class HttpProfileService extends IHttpProfileService {
+class RegisterService extends IRegisterService {
   @override
-  Future updateUserInfo(ProfileUserModel model, String kullaniciId) async {
+  Future registerUserSaveData(
+      ProfileUserModel model, String kullaniciId) async {
     await http.put(
         "https://fb-travel-app.firebaseio.com/userID/$kullaniciId.json",
         body: json.encode({
@@ -15,8 +16,8 @@ class HttpProfileService extends IHttpProfileService {
           'userGender': model.userGender,
           'userJob': model.userJob,
           'userName': model.userName,
-          'userProfileImg': model.userProfileImg,
-          'userPass': model.userPass
+          'userPass': model.userPass,
+          'userProfileImg': model.userProfileImg
         }));
   }
 }

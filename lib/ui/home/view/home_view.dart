@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:travel_blog/core/base/model/error_model.dart';
 import 'package:travel_blog/core/constants/constants.dart';
@@ -9,17 +11,17 @@ import 'package:travel_blog/ui/home/viewmodel/home_viewmodel.dart';
 import 'package:travel_blog/ui/maps/screen/LoadingMapCircular.dart';
 import 'package:travel_blog/ui/post_page/postpage.dart';
 import 'package:travel_blog/ui/profile_page/view/profile.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeView extends HomeViewModel {
-  static const storyListLength = 1000; // Dummy
+  String autID = FirebaseAuth.instance.currentUser.uid;
   final AuthService _auth = AuthService();
   int _index = 0;
   FutureBuilder futureBuilder;
   Future future;
-  String get userPicUrl =>
+  String get userDefaultImg =>
       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"; //shared pref profil img
   SizedBox zeroHeightSizedBox = SizedBox(height: 0);
+
   @override
   Widget build(BuildContext context) {
     switch (_index) {
@@ -31,7 +33,9 @@ class HomeView extends HomeViewModel {
         break;
     }
     return Scaffold(
-      appBar: buildAppBar(userPicUrl),
+      appBar: isLoading
+          ? buildAppBar(userDefaultImg)
+          : buildAppBar(user.userProfileImg),
       body: listFutureBuilder(future),
       bottomNavigationBar: BottomNavigationBar(
           currentIndex: _index,
@@ -56,13 +60,16 @@ class HomeView extends HomeViewModel {
   }
 
   AppBar buildAppBar(String userPicUrl) {
+    String image =
+        'http://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png';
+    if (userPicUrl != null) image = userPicUrl;
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      title: Text('Home', style: AppConstants.appTextStyleTitle),
       centerTitle: true,
-      leading: buildIconButtonProfile(userPicUrl),
+      leading: buildIconButtonProfile(image),
       actions: [
-        buildIconButtonSearch(),
         buildFlatButtonLogOut(),
       ],
     );
@@ -74,9 +81,7 @@ class HomeView extends HomeViewModel {
         await _auth.signOut();
       },
       icon: Icon(Icons.exit_to_app),
-      label: Text(
-        'Log out',
-      ),
+      label: Text(''),
     );
   }
 
@@ -88,15 +93,6 @@ class HomeView extends HomeViewModel {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Profile()));
       },
-    );
-  }
-
-  IconButton buildIconButtonSearch() {
-    return IconButton(
-      icon: Icon(Icons.search),
-      iconSize: MediaQuery.of(context).size.width * 0.08,
-      onPressed: () {},
-      color: Colors.black,
     );
   }
 

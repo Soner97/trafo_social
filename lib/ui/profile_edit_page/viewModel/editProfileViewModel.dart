@@ -17,10 +17,15 @@ abstract class EditProfileViewModel extends State<EditProfile> {
   bool buttonIsVisible = true;
   bool isImagePicking = false;
   List<TextEditingController> textEditingController;
-  List<String> textFieldsDefaultValues;
+  List<String> textFieldsDefaultValues = [
+    'Name',
+    'Email',
+    'Jobs',
+    'Date of Birth'
+  ];
   String dateTime;
   Gender selectedGender = Gender.Male;
-  UserModel userModel;
+  ProfileUserModel userModel;
 
   File pickedImage;
   final picker = ImagePicker();
@@ -33,7 +38,6 @@ abstract class EditProfileViewModel extends State<EditProfile> {
     for (int i = 0; i < 5; i++) {
       textEditingController.add(new TextEditingController());
     }
-    textFieldsDefaultValues = ['Name', 'Email', 'Jobs', 'Date of Birth'];
     userModel = widget.userModel;
     initGender();
     initDateTime();
@@ -41,17 +45,20 @@ abstract class EditProfileViewModel extends State<EditProfile> {
 
   void initGender() {
     setState(() {
-      if (userModel.userGender.toLowerCase() == 'female' ||
-          userModel.userGender.toLowerCase() == 'women') {
-        selectedGender = Gender.Female;
-      } else
-        selectedGender = Gender.Male;
+      if (userModel != null && userModel.userGender != null) {
+        if (userModel.userGender.toLowerCase() == 'female' ||
+            userModel.userGender.toLowerCase() == 'women') {
+          selectedGender = Gender.Female;
+        } else
+          selectedGender = Gender.Male;
+      }
     });
   }
 
   void initDateTime() {
     setState(() {
-      dateTime = userModel.userBirth;
+      if (userModel != null && userModel.userProfileImg != null)
+        dateTime = userModel.userBirth;
     });
   }
 
@@ -80,9 +87,9 @@ abstract class EditProfileViewModel extends State<EditProfile> {
     super.dispose();
     textEditingController.forEach((element) {
       element.dispose();
+      isDefault = true;
+      isDateFirstPicker = true;
     });
-    isDefault = true;
-    isDateFirstPicker = true;
   }
 
   void editProfileState() {
@@ -116,20 +123,30 @@ abstract class EditProfileViewModel extends State<EditProfile> {
   }
 
   Future uploadModel() async {
-    String userName = this.textEditingController[0].text ?? userModel.userName;
-    String userEmail =
-        this.textEditingController[1].text ?? userModel.userEmail;
-    String userJob = this.textEditingController[2].text ?? userModel.userJob;
-    String userDate = this.textEditingController[3].text ?? userModel.userBirth;
-    String userGender =
-        this.textEditingController[4].text ?? userModel.userGender;
-    UserModel tempModel = UserModel(
+    String userName = this.textEditingController[0].text.isNotEmpty
+        ? this.textEditingController[0].text
+        : userModel.userName;
+    String userEmail = this.textEditingController[1].text.isNotEmpty
+        ? this.textEditingController[1].text
+        : userModel.userEmail;
+    String userJob = this.textEditingController[2].text.isNotEmpty
+        ? this.textEditingController[2].text
+        : userModel.userJob;
+    String userDate = this.textEditingController[3].text.isNotEmpty
+        ? this.textEditingController[3].text
+        : userModel.userBirth;
+    String userGender = this.textEditingController[4].text.isNotEmpty
+        ? this.textEditingController[4].text
+        : userModel.userGender;
+
+    ProfileUserModel tempModel = ProfileUserModel(
         userBirth: userDate.toString(),
         userEmail: userEmail.toString(),
         userGender: userGender.toString(),
         userJob: userJob.toString(),
         userName: userName.toString(),
-        userProfileImg: imageUrl);
+        userProfileImg: imageUrl,
+        userPass: userModel.userPass);
     String uid = FirebaseAuth.instance.currentUser.uid;
     IHttpProfileService httpProfileService = HttpProfileService();
     await httpProfileService.updateUserInfo(tempModel, uid);
@@ -139,11 +156,16 @@ abstract class EditProfileViewModel extends State<EditProfile> {
     setState(() {
       isEditingData = false;
       buttonIsVisible = true;
-      textEditingController[0].text = userModel.userName;
-      textEditingController[1].text = userModel.userEmail;
-      textEditingController[2].text = userModel.userJob;
-      textEditingController[3].text = userModel.userBirth;
-      textEditingController[4].text = userModel.userGender;
+      if (userModel.userName != null)
+        textEditingController[0].text = userModel.userName;
+      if (userModel.userEmail != null)
+        textEditingController[1].text = userModel.userEmail;
+      if (userModel.userJob != null)
+        textEditingController[2].text = userModel.userJob;
+      if (userModel.userBirth != null)
+        textEditingController[3].text = userModel.userBirth;
+      if (userModel.userGender != null)
+        textEditingController[4].text = userModel.userGender;
     });
   }
 

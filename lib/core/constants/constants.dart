@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppConstants {
   static AppConstants _instance = AppConstants._init();
+
   static AppConstants get instance => _instance;
+
   AppConstants._init();
 
   static const String URL = "https://fb-wash-app.firebaseio.com";
@@ -11,14 +13,18 @@ class AppConstants {
 
   ////
   static const String BASE_URL = "https://fb-travel-app.firebaseio.com";
-  static const String FOOD_URL = "$BASE_URL/product/food.json";
-  static const String TRAVEL_URL = "$BASE_URL/product/traveller.json";
+  static const String FOOD_URL = "$BASE_URL/productID/food.json";
+  static const String TRAVEL_URL = "$BASE_URL/productID/traveller.json";
   static const String USER_URL = "$BASE_URL/user.json";
 
   ///
   static const Color THEME_COLOR = Color.fromRGBO(227, 250, 252, 1);
 
   // Text Styles
+  static final TextStyle appTextStyleSplashTitle = GoogleFonts.montserrat(
+    color: Colors.black,
+    fontSize: 40.0,
+  );
   static final TextStyle appTextStyleTitle = GoogleFonts.montserrat(
     color: Colors.black,
     fontSize: 30.0,

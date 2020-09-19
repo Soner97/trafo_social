@@ -7,6 +7,8 @@ import 'package:travel_blog/ui/profile_page/service/IProfile_service.dart';
 import 'package:travel_blog/ui/profile_page/service/profile_service.dart';
 import 'package:travel_blog/ui/profile_page/view/profile.dart';
 
+ProfileUserModel myUser;
+
 abstract class ProfileViewModel extends State<Profile> {
   bool isLoading = false;
   final List<ProfileModel> detailList = [];
@@ -19,8 +21,6 @@ abstract class ProfileViewModel extends State<Profile> {
   int index = 0;
   bool isCompleted = false;
   int userID = 1;
-
-  UserModel myUser;
 
   @override
   void initState() {
@@ -71,12 +71,12 @@ abstract class ProfileViewModel extends State<Profile> {
     myUser = await detailService.getUserModel(uid);
 
     for (int i = 0; i < foodList.length; ++i) {
-      if (foodList[i].sharedUserId == userID.toString()) {
+      if (foodList[i].sharedUserId == uid) {
         tempFoodList.add(foodList[i]);
       }
     }
     for (int i = 0; i < travelList.length; ++i) {
-      if (travelList[i].sharedUserId == userID.toString()) {
+      if (travelList[i].sharedUserId == uid) {
         tempTravelList.add(travelList[i]);
       }
     }
